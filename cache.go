@@ -100,6 +100,23 @@ func (cache *Cache) Contains(key string) bool {
 	return ok
 }
 
+func (cache *Cache) Get(key string) (interface{}, bool) {
+	cache.mux.Lock()
+	defer cache.mux.Unlock()
+	value, ok := cache.entities[key]
+	return value.data, ok
+}
+
+func (cache *Cache) GetAllKeys() []string {
+	cache.mux.Lock()
+	defer cache.mux.Unlock()
+	result := make([]string, len(cache.entities))
+	for k := range cache.entities {
+		result = append(result, k)
+	}
+	return result
+}
+
 func (cache *Cache) tryRenew(key string) (interface{}, bool) {
 	old, ok := cache.entities[key]
 	if !ok {
